@@ -1,14 +1,10 @@
+from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Test, Attempt, AttemptAnswer, Question
-from .serializers import (
-    TestListSerializer,
-    TestDetailSerializer,
-    AttemptSerializer,
-)
-from .services import grade_attempt
+from .models import Test, Attempt, Question, Choice
+from .serializers import TestListSerializer, TestDetailSerializer, AttemptSerializer
 
 
 class TestViewSet(viewsets.ReadOnlyModelViewSet):
@@ -17,22 +13,13 @@ class TestViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-
-        # По умолчанию фронту лучше показывать только опубликованные
-        published = self.request.query_params.get("published", "1")
-        if published in ("1", "true", "yes"):
-            qs = qs.filter(is_published=True)
-
         skill = self.request.query_params.get("skill")
         if skill:
             qs = qs.filter(skill=skill)
-
         return qs
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return TestDetailSerializer
-        return TestListSerializer
+        return TestDetailSerializer if self.action == "retrieve" else TestListSerializer
 
 
 class AttemptViewSet(viewsets.ModelViewSet):
@@ -45,14 +32,19 @@ class AttemptViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False, methods=["get"])
+    def my(self, request):
+        qs = self.get_queryset()
+        return Response(self.get_serializer(qs, many=True).data)
+
     @action(detail=True, methods=["post"])
     def submit(self, request, pk=None):
         """
-        Body:
+        body:
         {
           "answers": [
-            {"question": 123, "answer": "B"},
-            {"question": 124, "answer": "TRUE"}
+            {"question": 1, "choice": 10},
+            {"question": 2, "text": "my answer"}  # на будущее
           ]
         }
         """
@@ -61,46 +53,32 @@ class AttemptViewSet(viewsets.ModelViewSet):
         if not isinstance(answers, list):
             return Response({"detail": "answers must be a list"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # создаём/обновляем ответы
+        score = 0
+
+        # простой подсчёт только MCQ через Choice.is_correct
         for item in answers:
             qid = item.get("question")
-            ans = item.get("answer", "")
-            if not qid:
+            cid = item.get("choice")
+            if not (qid and cid):
                 continue
             try:
-                q = Question.objects.get(id=qid)
-            except Question.DoesNotExist:
+                choice = Choice.objects.select_related("question").get(id=cid, question_id=qid)
+            except Choice.DoesNotExist:
                 continue
+            if choice.is_correct:
+                score += 1
 
-            AttemptAnswer.objects.update_or_create(
-                attempt=attempt,
-                question=q,
-                defaults={"answer": str(ans)},
-            )
+        attempt.raw_score = score
+        attempt.finished_at = timezone.now()
+        attempt.save(update_fields=["raw_score", "finished_at"])
 
-        grade_attempt(attempt)
-        data = AttemptSerializer(attempt).data
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(AttemptSerializer(attempt).data)
 
     @action(detail=True, methods=["get"])
     def result(self, request, pk=None):
         attempt = self.get_object()
-
-        # краткий результат + ответы (для разборов позже расширим)
-        answers = AttemptAnswer.objects.select_related("question").filter(attempt=attempt).order_by("question__number")
         return Response(
             {
                 "attempt": AttemptSerializer(attempt).data,
-                "answers": [
-                    {
-                        "question": a.question_id,
-                        "number": a.question.number,
-                        "answer": a.answer,
-                        "is_correct": a.is_correct,
-                        "correct_answer": a.question.correct_answer,
-                        "accepted_answers": a.question.accepted_answers,
-                    }
-                    for a in answers
-                ],
             }
         )
