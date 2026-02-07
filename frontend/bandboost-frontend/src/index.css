@@ -1,0 +1,279 @@
+:root {
+            --primary: #6366f1;
+            --accent: #a855f7;
+            --bg: #030712;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: white; overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* --- ADVANCED PRELOADER --- */
+        #loader {
+            position: fixed; inset: 0; background: #000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1);
+        }
+        .loader-text {
+            font-size: 2rem; font-weight: 800; letter-spacing: 10px;
+            background: linear-gradient(90deg, #fff, #444, #fff);
+            background-size: 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 2s infinite;
+        }
+        @keyframes shine { 0% { background-position: -200%; } 100% { background-position: 200%; } }
+
+        /* --- BACKGROUND MESH --- */
+        .mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
+                        radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%),
+                        radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            z-index: -1; filter: blur(80px); opacity: 0.6;
+        }
+
+        /* --- NAV --- */
+        nav {
+            padding: 25px 8%; display: flex; justify-content: space-between; align-items: center;
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+        }
+        .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 8px; rotate: 45deg; }
+
+        /* --- HERO --- */
+        .hero {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 0 15%; position: relative;
+        }
+        .hero-badge {
+            background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary);
+            padding: 8px 20px; border-radius: 100px; font-size: 0.8rem; color: var(--primary);
+            margin-bottom: 25px; animation: float 3s ease-in-out infinite;
+        }
+        .hero h1 { font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; line-height: 1; letter-spacing: -3px; margin-bottom: 25px; }
+        .hero h1 span { color: var(--primary); }
+
+        /* --- BENTO GRID --- */
+        .section-title { text-align: center; margin-bottom: 60px; }
+        .bento {
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 300px);
+            gap: 20px; padding: 30px 0 100px;
+        }
+        .bento-item {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 30px;
+            padding: 40px; transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .bento-item:hover { border-color: var(--primary); transform: scale(1.02); }
+        .bento-item.wide { grid-column: span 2; }
+        .bento-item.tall { grid-row: span 2; }
+
+        /* --- PRICING --- */
+        .pricing { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .price-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 50px; border-radius: 40px; width: 300px; position: relative;
+        }
+        .price-card.featured { border: 2px solid var(--primary); }
+        .price-card.featured::before {
+            content: "MOST POPULAR"; position: absolute; top: -15px; left: 50%;
+            transform: translateX(-50%); background: var(--primary); padding: 5px 15px;
+            border-radius: 10px; font-size: 0.7rem; font-weight: bold;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-glow {
+            padding: 18px 45px; background: var(--primary); color: white;
+            border-radius: 15px; text-decoration: none; font-weight: 700;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); transition: 0.3s;
+        }
+        .btn-glow:hover { box-shadow: 0 0 50px rgba(99, 102, 241, 0.6); transform: translateY(-2px); }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        @media (max-width: 900px) {
+            .bento { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .bento-item.wide, .bento-item.tall { grid-column: span 1; grid-row: span 1; }
+        }
+        /* --- LOGIN SPECIFIC STYLES --- */
+.login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.login-container {
+    z-index: 10;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+.login-card {
+    text-align: center;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+}
+
+.login-card h2 {
+    font-size: 2rem;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.error-msg {
+    color: #f43f5e;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+.login-page {
+    background-image: url('./assets/auth-bg.png'); /* If you want a specific image background */
+    background-size: cover;
+    background-position: center;
+}
+.dashboard-layout { display: flex; height: 100vh; background: var(--bg); }
+
+.sidebar {
+    width: 280px;
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border);
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links { list-style: none; margin-top: 50px; flex-grow: 1; }
+.nav-links li { margin-bottom: 20px; }
+.nav-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: 0.3s;
+}
+.nav-links li.active a, .nav-links a:hover { color: var(--primary); }
+
+.profile-content { flex-grow: 1; padding: 60px 8%; overflow-y: auto; }
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #030712; /* Matches your landing page */
+}
+
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky; /* Keeps it there while scrolling */
+    top: 0;
+    background: rgba(17, 24, 39, 0.95);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px 20px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    color: white;
+}
+.watchDemo {
+    transition: 0.3s all ease-in-out !important;
+    border-radius: 15px;
+}
+.watchDemo:hover {
+    border: 1px solid white;
+}
+
+.logout-btn {
+    position: relative;
+    padding: 12px 28px;
+    background: rgba(255, 40, 90, 0.05); /* Very subtle red tint */
+    border: 1px solid rgba(255, 40, 90, 0.3);
+    border-radius: 12px;
+    color: #ff4d79;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    backdrop-filter: blur(10px);
+}
+
+.btn-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+    position: relative;
+}
+
+/* The neon glow that appears on hover */
+.btn-glow-layer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 40, 90, 0.4);
+    box-shadow: 0 0 30px 15px rgba(255, 40, 90, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 1;
+}
+
+/* Hover States */
+.logout-btn:hover {
+    color: #fff;
+    border-color: #ff285a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 40, 90, 0.2);
+}
+
+.logout-btn:hover .btn-glow-layer {
+    width: 250px;
+    height: 250px;
+}
+
+.logout-btn:active {
+    transform: scale(0.95);
+}
+
+/* Icon Animation */
+.logout-btn i {
+    transition: transform 0.3s ease;
+}
+
+.logout-btn:hover i {
+    transform: translateX(3px);
+}
